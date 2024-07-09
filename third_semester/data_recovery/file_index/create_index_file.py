@@ -1,10 +1,16 @@
 import os
 
-def main():
+def main() -> None:
     file = open('trabalhos.dat','rb')
     index_file = open('index_file.dat','xb')
+    record_header = 4
+    file.seek(record_header,os.SEEK_SET)
+    next_byte_offset = record_header
     while is_there_record(file):
-        write_record(index_file,read_record(file))
+        current_byte_offset = next_byte_offset
+        record, next_byte_offset = read_record(file, current_byte_offset)
+        record_key = record_key(record)
+        write_record(index_file, record_key, current_byte_offset)
 
 def is_there_record(file) -> str:
     next_byte_decoded = file.read(1).decode()
