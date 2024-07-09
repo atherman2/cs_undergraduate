@@ -3,16 +3,16 @@ import os
 def main() -> None:
     file = open('trabalhos.dat','rb')
     index_file = open('index_file.dat','xb')
-    current_byte_offset = 0
+    f_current_byte_offset = 0
     record_header_size = 4
     file.seek(record_header_size,os.SEEK_SET)
-    current_byte_offset += record_header_size
-    next_byte_offset = current_byte_offset
+    f_current_byte_offset += record_header_size
+    f_next_byte_offset = f_current_byte_offset
     while is_there_record(file):
-        current_byte_offset = next_byte_offset
-        record, next_byte_offset = read_record(file, current_byte_offset)
-        record_key = record_key(record)
-        write_record(index_file, record_key, current_byte_offset)
+        f_current_byte_offset = f_next_byte_offset
+        record, f_next_byte_offset = read_record(file, f_current_byte_offset)
+        record_key = get_record_key(record)
+        write_record(index_file, record_key, f_current_byte_offset)
 
 def is_there_record(file) -> str:
     # return the next byte of a file as a string that can be used as a boolean value
@@ -31,3 +31,7 @@ def read_record(file, current_byte_offset):
     record = file.read(record_size)
     next_byte_offset += record_size
     return record, next_byte_offset
+
+def get_record_key(record):
+    fields = record.split('|')
+    return fields[0]
