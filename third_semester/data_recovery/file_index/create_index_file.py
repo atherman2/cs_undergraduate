@@ -17,7 +17,8 @@ def main() -> None:
 def is_there_record(file) -> str:
     # return the next byte of a file as a string that can be used as a boolean value
     # the boolean value tells if there is one more record
-    next_byte_decoded = file.read(1).decode()
+    next_byte = file.read(1)
+    next_byte_decoded = next_byte.decode()
     file.seek(-1,os.SEEK_CUR)
     return next_byte_decoded
 
