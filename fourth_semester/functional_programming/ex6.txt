@@ -1,0 +1,462 @@
+1.
+
+#lang racket
+(require examples)
+
+(struct no (valor esq dir) #:transparent)
+
+(define (arv-soma-n t n)
+    (cond
+        [(empty? t) empty]
+        [else (no (+ (no-valor t) n) (arv-soma-n (no-esq t) n) (arv-soma-n (no-dir t) n))]
+    )
+)
+
+(examples
+    (check-equal? (arv-soma-n empty 2) empty)
+    (check-equal? (arv-soma-n (no 10 (no 50 empty empty) empty) 2) (no 12 (no 52 empty empty) empty))
+    (check-equal?
+        (arv-soma-n (no 400 (no 100 (no 200 empty empty) empty) (no 80 empty empty)) 10)
+        (no 410 (no 110 (no 210 empty empty) empty) (no 90 empty empty))
+    )
+)
+
+2.
+
+#lang racket
+(require examples)
+
+(struct no (valor esq dir) #:transparent)
+
+(define (arv-busca? t)
+    (cond
+        [(empty? t) #t]
+        [
+            (and (no? (no-esq t)) (no? (no-dir t)))
+            (and
+                (< (no-valor (no-esq t)) (no-valor t))
+                (> (no-valor (no-dir t)) (no-valor t))
+                (arv-busca? (no-esq t))
+                (arv-busca? (no-dir t))
+            )
+        ]
+        [
+            (and (empty? (no-esq t)) (empty? (no-dir t)))
+            #t
+        ]
+        [
+            (empty? (no-esq t))
+            (and
+                (> (no-valor (no-dir t)) (no-valor t))
+                (arv-busca? (no-dir t))
+            )
+        ]
+        [else 
+            (and
+                (< (no-valor (no-esq t)) (no-valor t))
+                (arv-busca? (no-esq t))
+            )
+        ]
+    )
+)
+
+(examples
+    (check-equal?
+        (arv-busca?
+            (no 10 (no 5 empty empty) (no 20 empty empty))
+        )
+        #t
+    )
+    (check-equal?
+        (arv-busca? empty)
+        #t
+    )
+    (check-equal?
+        (arv-busca? 
+            (no 10 (no 20 empty (no 40 (no 15 empty empty) empty)) (no 100 empty empty))
+        )
+        #f
+    )
+    (check-equal?
+        (arv-busca?
+            (no 15 (no 8 (no 4 empty empty) (no 12 empty empty)) (no 20 empty empty))
+        )
+        #t
+    )
+)
+
+3.
+
+#lang racket
+(require examples)
+
+(struct no (valor esq dir) #:transparent)
+
+(define (busca t n)
+    (cond
+        [(empty? t) #f]
+        [(= (no-valor t) n) #t]
+        [(< n (no-valor t)) (busca (no-esq t) n)]
+        [else (busca (no-dir t) n)]
+    )
+)
+
+(examples
+    (check-equal?
+        (busca
+            (no 12 empty empty)
+            12
+        )
+        #t
+    )
+    (check-equal?
+        (busca
+            (no 15 (no 8 (no 4 empty empty) (no 12 empty empty)) (no 20 empty empty))
+            20
+        )
+        #t
+    )
+    (check-equal?
+        (busca
+            (no 15 (no 8 (no 4 empty empty) (no 12 empty empty)) (no 20 empty empty))
+            2
+        )
+        #f
+    )
+)
+
+4.
+
+#lang racket
+(require examples)
+
+(define (reverse* lst)
+    (define (reverse*carry lst carry)
+        (cond
+            [(empty? lst) carry]
+            [(list? lst) (reverse*carry (rest lst) (cons (reverse*carry (first lst) empty) carry))]
+            [else lst]
+        )
+    )
+    (reverse*carry lst empty)
+)
+
+(examples
+    (check-equal?
+        (reverse* (list 1 (list 2 3) 4))
+        (list 4 (list 3 2) 1)
+    )
+    (check-equal?
+        (reverse* (list 1 2 (list 3 (list 4 5) 6) (list 7 8)))
+        (list (list 8 7) (list 6 (list 5 4 ) 3) 2 1)
+    )
+)
+
+5.
+
+#lang racket
+(require examples)
+
+(define (maior a b)
+    (cond
+        [(zero? a) #f]
+        [(zero? b) #t]
+        [else (maior (sub1 a) (sub1 b))]
+    )
+)
+
+(define (maior-ou-igual a b)
+    (cond
+        [(zero? a) 
+            (cond
+                [(zero? b) #t]
+                [else #f]
+            )
+        ]
+        [(zero? b) #t]
+        [else (maior-ou-igual (sub1 a) (sub1 b))]
+    )
+)
+
+(define (menor a b)
+    (cond
+        [(zero? b) #f]
+        [(zero? a) #t]
+        [else (menor (sub1 a) (sub1 b))]
+    )
+)
+
+(define (menor-ou-igual a b)
+    (cond
+        [(zero? b) 
+            (cond
+                [(zero? a) #t]
+                [else #f]
+            )
+        ]
+        [(zero? a) #t]
+        [else (menor-ou-igual (sub1 a) (sub1 b))]
+    )
+)
+
+(define (igual a b)
+    (cond
+        [(zero? a)
+            (cond
+                [(zero? b) #t]
+                [else #f]
+            )
+        ]
+        [(zero? b) #f]
+        [else (igual (sub1 a) (sub1 b))]
+    )
+)
+
+(examples
+    (check-equal? (maior 17 4) #t)
+    (check-equal? (maior-ou-igual 10 10) #t)
+    (check-equal? (menor 9 6) #f)
+    (check-equal? (menor-ou-igual 10 9) #f)
+    (check-equal? (igual 5 5) #t)
+)
+
+6.
+
+#lang racket
+(require examples)
+
+(define (intercala lst1 lst2)
+    (cond
+        [(empty? lst1) lst2]
+        [(empty? lst2) lst1]
+        [(< (first lst1) (first lst2))
+            (cons (first lst1) (intercala (rest lst1) lst2))
+        ]
+        [else
+            (cons (first lst2) (intercala lst1 (rest lst2)))
+        ]
+    )
+)
+
+(examples
+    (check-equal?
+        (intercala (list 2 6 8 10 18) (list 5 11 17))
+        (list 2 5 6 8 10 11 17 18)
+    )
+    (check-equal?
+        (intercala (list 4 6 8 14 20 42) (list 5 10 12 16 22 60))
+        (list 4 5 6 8 10 12 14 16 20 22 42 60)
+    )
+)
+
+7.
+
+#lang racket
+(require examples)
+
+(define (mantem lst n)
+    (cond
+        [(= n 0) empty]
+        [(empty? lst) empty]
+        [else (cons (first lst) (mantem (rest lst) (sub1 n)))]
+    )
+)
+
+(examples
+    (check-equal?
+        (mantem (list 1 2 3 4) 3)
+        (list 1 2 3)
+    )
+    (check-equal?
+        (mantem (list 1 5 14 20 25 28 30 32 44) 5)
+        (list 1 5 14 20 25)
+    )
+)
+
+8.
+
+#lang racket
+(require examples)
+
+(define (descarta lst n)
+    (cond
+        [(= n 0) lst]
+        [(empty? lst) empty]
+        [else (descarta (rest lst) (sub1 n))]
+    )
+)
+
+(examples
+    (check-equal?
+        (descarta (list 123 109 235 634 734 695) 3)
+        (list 634 734 695)
+    )
+    (check-equal?
+        (descarta (list 512 404 389 350) 1)
+        (list 404 389 350)
+    )
+)
+
+9.
+
+#lang racket
+(require examples)
+
+(define (remove-em lst n)
+    (cond
+        [(empty? lst) empty]
+        [(zero? n) (rest lst)]
+        [else
+            (cons
+                (first lst)
+                (remove-em (rest lst) (sub1 n))
+            )
+        ]
+    )
+)
+
+(examples
+    (check-equal?
+        (remove-em
+            (list 10 20 30 40 50) 0
+        )
+        (list 20 30 40 50)
+    )
+    (check-equal?
+        (remove-em
+            (list 231 9384 289 34 293) 3
+        )
+        (list 231 9384 289 293)
+    )
+)
+
+10.
+
+#lang racket
+(require examples)
+
+(define (insere-em lst num pos)
+    (cond
+        [(empty? lst)
+            (cond
+                [(zero? pos)
+                    (list num)
+                ]
+                [else empty]
+            )
+        ]
+        [(zero? pos)
+            (cons num lst)
+        ]
+        [else
+            (cons
+                (first lst)
+                (insere-em (rest lst) num (sub1 pos)
+                )
+            )
+        ]
+    )
+)
+
+(examples
+    (check-equal?
+        (insere-em
+            (list 0 1 2 3 4 5) 10 4
+        )
+        (list 0 1 2 3 10 4 5)
+    )
+    (check-equal?
+        (insere-em
+            (list 10 20) 5 2
+        )
+        (list 10 20 5)
+    )
+)
+
+11.
+
+#lang racket
+(require examples)
+
+(define (sublista lst inicio fim)
+    (cond
+        [(empty? lst) empty]
+        [(zero? inicio)
+            (cond
+                [(zero? fim) empty]
+                [else
+                    (cons
+                        (first lst)
+                        (sublista
+                            (rest lst) inicio (sub1 fim)
+                        )
+                    )
+                ]
+            )
+        ]
+        [else (sublista (rest lst) (sub1 inicio) (sub1 fim))]
+    )
+)
+
+(examples
+    (check-equal?
+        (sublista (list 123 5230 3289 5029 328) 0 3)
+        (list 123 5230 3289)
+    )
+    (check-equal?
+        (sublista (list 593 298 630 327 343 583 574) 5 7)
+        (list 583 574)
+    )
+)
+
+12.
+
+#lang racket
+(require examples)
+
+(define (rotaciona-esquerda lst n)
+    (define len (conta-lista lst 0))
+    (define indice-particao (remainder n len))
+    (append
+        (sublista lst indice-particao len)
+        (sublista lst 0 indice-particao)
+    )
+)
+
+(define (conta-lista lst carry)
+    (cond
+        [(empty? lst) carry]
+        [else (conta-lista (rest lst) (add1 carry))]
+    )
+)
+
+(define (sublista lst inicio fim)
+    (cond
+        [(empty? lst) empty]
+        [(zero? inicio)
+            (cond
+                [(zero? fim) empty]
+                [else
+                    (cons
+                        (first lst)
+                        (sublista
+                            (rest lst) inicio (sub1 fim)
+                        )
+                    )
+                ]
+            )
+        ]
+        [else (sublista (rest lst) (sub1 inicio) (sub1 fim))]
+    )
+)
+
+(examples
+    (check-equal?
+        (rotaciona-esquerda (list 1 2 3 4 5) 2)
+        (list 3 4 5 1 2)
+    )
+    (check-equal?
+        (rotaciona-esquerda (list 10 40 90) 4)
+        (list 40 90 10)
+    )
+)

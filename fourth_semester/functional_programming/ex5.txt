@@ -1,0 +1,391 @@
+1.
+
+(define (concatena-lista lista)
+   (if (empty? lista)
+       ""
+       (string-append (first lista) (concatena-lista
+                                       (rest lista)
+                                    )
+       )
+   )
+)
+
+2.
+
+(define (produto-lista lista)
+   (if (empty? lista)
+       1
+       (* (first lista) (produto-lista
+             (rest lista)
+          )
+       )
+   )
+)
+
+3.
+
+(define (quantidade-elementos lista)
+  (if (empty? lista)
+      0
+      (+ 1 (quantidade-elementos (rest lista)))
+  )
+)
+
+4.
+
+#lang racket
+
+(define (lista-numeros lista)
+   (if (empty? lista)
+       empty
+       (cons (string->number (first lista))
+          (lista-numeros (rest lista))
+       )
+   )
+)
+
+5.
+
+(define (menos-A lista)
+   (cond [(empty? lista) empty]
+      [(equal? (substring (first lista) 0 1) "A") (menos-A (rest lista))]
+      [else (cons (first lista) (menos-A (rest lista)))]
+   )
+)
+
+6.
+
+(define (exclui-nulos lista)
+   (if (empty? lista)
+      empty
+      (if (empty? (first lista))
+         (exclui-nulos (rest lista))
+         (cons (first lista)
+            (exclui-nulos (rest lista))
+         )
+      )
+   )
+)
+
+;; (exclui-nulos (list 1 2 empty 3 empty empty))
+;; (list 1 2 3)
+;;
+;; (exclui-nulos (list empty empty empty 10 4 9))
+;; (list 10 4 9)
+
+7.
+
+#lang racket
+
+(define (todos-verdadeiros lista)
+   (if (empty? lista)
+      #t
+      (and (first lista)
+          (todos-verdadeiros (rest lista))
+      )
+   )
+)
+
+;; (todos-verdadeiros (list #t #t #f #t))
+;; #f
+;;
+;; (todos-verdadeiros (list #t #t #t #t))
+;; #t
+
+8.
+
+(define (algum-verdadeiro lista)
+   (if (empty? lista)
+      #f
+      (or (first lista)
+          (algum-verdadeiro (rest lista))
+      )
+   )
+)
+
+;; (algum-verdadeiro (list #f #t #f #f))
+;; #t
+;;
+;; (algum-verdadeiro (list #f #f #f #f))
+;; #f
+
+9.
+
+(define (ultimo-lista lista)
+   (if (empty? (rest lista))
+      (first lista)
+      (ultimo-lista (rest lista))
+   )
+)
+
+;; (ultimo-lista (list 1 2 3 4))
+;; 4
+;;
+;; (ultimo-lista (list 10 9 8 7 6))
+;; 6
+
+10.
+
+(define (maior-tamanho-de-string lista)
+   (define (maior a b)
+      (if (>= a b)
+         a
+         b
+      )
+   )
+   (if (empty? lista)
+      -1
+      (maior (string-length (first lista))
+         (maior-tamanho-de-string (rest lista))
+      )
+   )
+)
+
+;; (maior-tamanho-de-string (list "123" "12" "" "ab"))
+;; 3
+;;
+;; (maior-tamanho-de-string (list "1" "12" "12345" "abcd"))
+;; 5
+
+11.
+
+(define (ordem-nao-decrescente lista)
+   (if (empty? lista)
+      #t
+      (if (empty? (rest lista))
+         #t
+         (and (<= (first lista) (first (rest lista)))
+            (ordem-nao-decrescente (rest lista))
+         )
+      )
+   )
+)
+
+;; (ordem-nao-decrescente (list 5 4 3 2 1))
+;; #f
+;;
+;; (ordem-nao-decrescente (list 1 2 3 4 5))
+;; #t
+;;
+;; (ordem-nao-decrescente (list 1 2 3 2 4))
+;; #f
+
+12.
+
+#lang racket
+(require examples)
+
+(define (inverte-lst lst)
+
+   (cond
+      [(empty? lst) lst]
+      [else (append (inverte-lst (rest lst)) (list (first lst)))]
+   )
+
+)
+
+
+(examples
+   (check-equal? (inverte-lst (list 1 2 3 4 5)) (list 5 4 3 2 1))
+   (check-equal? (inverte-lst empty) empty)
+   (check-equal? (inverte-lst (list 1)) (list 1))
+)
+
+13.
+
+#lang racket
+(require examples)
+
+(define (mais-positivos? lst)
+   (define (positivos-negativos lst positivos negativos)
+      (cond
+         [(empty? lst) (> positivos negativos)]
+         [(> (first lst) 0) (positivos-negativos (rest lst) (+ 1 positivos) negativos)]
+         [(< (first lst) 0) (positivos-negativos (rest lst) positivos (+ 1 negativos))]
+         [else (positivos-negativos (rest lst) positivos negativos)]
+      )
+   )
+   (positivos-negativos lst 0 0)
+)
+
+(examples
+   (check-equal? (mais-positivos? (list 1 2 3 -1)) #t)
+   (check-equal? (mais-positivos? (list -2 -3 1 -4)) #f)
+)
+
+14.
+
+#lang racket
+(require examples)
+
+(define (amplitude lst)
+   (define (amplitude-m-m lst max min)
+      (cond
+         [(empty? lst) (- max min)]
+         [(> (first lst) max) (amplitude-m-m (rest lst) (first lst) min)]
+         [(< (first lst) min) (amplitude-m-m (rest lst) max (first lst))]
+         [else (amplitude-m-m (rest lst) max min)]
+      )
+   )
+   (cond
+      [(empty? lst) 0]
+      [else (amplitude-m-m (rest lst) (first lst) (first lst))]
+   )
+)
+
+(examples
+   (check-equal? (amplitude (list 1 2 3 4 5)) 4)
+   (check-equal? (amplitude (list 8 4 2 3 6)) 6)
+)
+
+15.
+
+#lang racket
+(require examples)
+
+(define (fatorial n)
+   (cond
+      [(> n 1) (* n (fatorial (- n 1)))]
+      [(= n 1) 1]
+      [else "ERRO"]
+   )
+)
+
+(examples
+   (check-equal? (fatorial 4) 24)
+   (check-equal? (fatorial 1) 1)
+   (check-equal? (fatorial -2) "ERRO")
+)
+
+16.
+
+#lang racket
+(require examples)
+
+(define (pot a n)
+   (cond
+      [(= n 0) 1]
+      [else (* a (pot a (- n 1)))]
+   )
+)
+
+(examples
+   (check-equal? (pot 2 3) 8)
+   (check-equal? (pot 4 0) 1)
+)
+
+17.
+
+#lang racket
+(require examples)
+
+(define (divisores x n)
+   (define (divisores-lst x n lst indice)
+      (cond
+         [(> indice n) lst]
+         [else 
+            (cond
+               [(= (remainder x indice) 0) (divisores-lst x n (cons indice lst) (+ 1 indice))]
+               [else (divisores-lst x n lst (+ 1 indice))]
+            )
+         ]
+      )
+   )
+   (divisores-lst x n empty 1)
+)
+
+(examples
+   (check-equal? (divisores 12 3) (list 3 2 1))
+   (check-equal? (divisores 17 4) (list 1))
+)
+
+18.
+
+#lang racket
+(require examples)
+
+(define (pfto? n)
+   (define (divisores x n)
+      (define (divisores-lst x n lst indice)
+         (cond
+            [(> indice n) lst]
+            [else 
+               (cond
+                  [(= (remainder x indice) 0) (divisores-lst x n (cons indice lst) (+ 1 indice))]
+                  [else (divisores-lst x n lst (+ 1 indice))]
+               )
+            ]
+         )
+      )
+      (divisores-lst x n empty 1)
+   )
+   (define (soma-lst lst)
+      (cond
+         [(empty? lst) 0]
+         [else (+ (first lst) (soma-lst (rest lst)))]
+      )
+   )
+   (= (soma-lst (divisores n (- n 1))) n)
+)
+
+(examples
+   (check-equal? (pfto? 6) #t)
+   (check-equal? (pfto? 18) #f)
+   (check-equal? (pfto? 28) #t)
+)
+
+19.
+
+#lang racket
+(require examples)
+
+(define (impar? n)
+   (par? (- n 1))
+)
+
+(define (par? n)
+   (cond
+      [(= n 0) #t]
+      [(< n 0) #f]
+      [else (impar? (- n 1))]
+   )
+)
+
+(examples
+   (check-equal? (par? 4) #t)
+   (check-equal? (par? 0) #t)
+   (check-equal? (impar? 12) #f)
+   (check-equal? (impar? 7) #t)
+)
+
+20.
+
+#lang racket
+(require examples)
+
+(define (mais x y)
+   (cond
+      [(zero? x) y]
+      [else (mais (sub1 x) (add1 y))]
+   )
+)
+
+(define (menos x y)
+   (cond
+      [(zero? y) x]
+      [else (menos (sub1 x) (sub1 y))]
+   )
+)
+
+(define (vezes x y)
+   (cond
+      [(zero? x) 0]
+      [else (mais y (vezes (sub1 x) y))]
+   )
+)
+
+(examples
+   (check-equal? (mais 1 2) 3)
+   (check-equal? (menos 5 2) 3)
+   (check-equal? (vezes 2 3) 6)
+)

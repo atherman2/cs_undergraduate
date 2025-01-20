@@ -1,0 +1,486 @@
+1)
+;; InteiroPositivo -> Boolean
+;;
+;; Produz #t se uma pessoa com a idade n é supercentenária,
+;; isto é, tem 110 anos ou mais, #f caso contrário.
+
+   (examples
+   (check-equal? (supercentenario 101) #f)
+   (check-equal? (supercentenario 110) #t)
+   (check-equal? (supercentenario 112) #t))
+
+(define (supercentenario n)
+   (>= n 110)
+)
+
+2)
+;; String -> String
+;;
+;; Transforma a data de entrada do formato "dia/mes/ano"
+;; para o formato "ano/mes/dia".
+;;
+;; Requer que o dia e o mes tenha dois dígitos e que
+;; o ano tenha quatro digitos.
+
+   (examples
+   (check-equal? (data-dma->data-amd "19/07/2023") "2023/07/19")
+   (check-equal? (data-dma->data-amd "01/01/1980") "1980/01/01")
+   (check-equal? (data-dma->data-amd "02/02/2002") "2002/02/02"))
+
+(define (data-dma->data-amd data)
+   (string-append
+      (sub-string data 6 10)
+      "/"
+      (sub-string data 3 5)
+      "/"
+      (sub-string data 0 2)
+   )
+)
+
+3)
+;; String -> String
+;;
+;; Avalia se um nome é curto, médio ou longo
+;;
+;; Caso ele tenha 4 ou menos caracteres,
+;; então retorna "curto"
+;;
+;; Caso ele tenha mais do que 4 caracteres e até
+;; 10 caracteres (10 incluso), então retorna "médio"
+;;
+;; Caso ele tenha mais do que 10 caracteres, então
+;; retorna "longo"
+
+(examples
+(check-equal? (tamanho-nome "Nara") "curto")
+(check-equal? (tamanho-nome "Alberto") "médio")
+(check-equal? (tamanho-nome "José Guilherme") "longo")
+)
+
+
+4)
+;; String -> InteiroPositivo
+;;
+;; Converte uma sequência de "a"s e "b"s em um número
+;; considerando que "a"s representam "0"s e "b"s 
+;; representam "1"s. Além disso, considera-se que a base é 
+;; a base (base binária).
+;;
+;; Desta forma, a função substitui os "a"s por "0"s e os
+;; "b"s por "1"s. Na seqência, converte a string resultante
+;; composta por "1"s e "0"s para um número assumindo-se
+;; que a sequência de "1"s e "0"s representa um número
+;; em base binária
+
+(examples
+(check-equal? (ab->number "bab") 5)
+(check-equal? (ab->number "baaa") 8)
+(check-equal? (ab-number "bb") 3)
+)
+
+
+5)a) Função que converte medida em centímetros para polegadas:
+
+(define (cm->in medida)
+;; NúmeroReal -> NúmeroReal
+;;
+;; Tem como entrada um valor de medida em centímetros
+;; e tem como resultado o valor correspondente da medida
+;; em polegadas
+
+(examples
+(check-equal? (cm->in 1.0) 2.54)
+(check-equal? (cm->in 4.0) 10.16)
+(check-equal? (cm->in 3.3) 8.382)
+)
+
+(define valor_in_em_cm 2.54)
+(* medida valor_in_em_cm)
+)
+
+5)b) Função que converte medida em polegadas para centímetros:
+
+(define (in->cm medida)
+;; NúmeroReal -> NúmeroReal
+;;
+;; Tem como entrada um valor de medida em polegadas
+;; e tem como resultado o valor correspondente da medida
+;; em centímetros
+
+(examples
+(check-= (in->cm 2.54) 1.0 0.001)
+(check-= (in->cm 10.16) 3.0 0.001)
+(check-= (in->cm 8.382) 3.3 0.001)
+)
+
+(define valor_cm_em_in (/ 1 2.54))
+(* medida valor_cm_em_in)
+)
+
+6)
+
+(define (imposto renda)
+
+;; NúmeroReal -> NúmeroReal
+;;
+;; Calcula o imposto pago por um cidadão
+;; de acordo com sua renda em dinheiros
+;; e a definição:
+;;
+;; renda de 0 até 1000 dinheiros:
+;; 5% da renda
+;;
+;; renda de 1001 até 5000 dinheiros:
+;; 5% de 1000 dinheiros
+;; + 10% da renda que passar de 1000 dinheiros
+;;
+;; renda acima de 5000 dinheiros:
+;; 5% de 1000 dinheiros
+;; + 10% de 4000 dinheiros
+;; + 20% da renda que passar
+;; de 5000 dinheiros
+
+(examples
+(check-= (imposto 450.0) 22.5 0.001)
+(check-= (imposto 3000.0) 250.0 0.001)
+(check-= (imposto 8000.0) 1050.0 0.001)
+)
+
+  (cond
+    [(<= renda 1000) (* 0.05 renda)]
+    [(<= renda 5000) (+ 50 (* 0.1 (- renda 1000)))]
+    [else (+ 450 (* 0.2 (- renda 5000)))]
+  )
+)
+
+7)
+
+(define (duplicada? palavra)
+  (define tamanho_palavra (string-length palavra))
+  (define meio_palavra (quotient tamanho_palavra 2))
+  (define paridade_tamanho_palavra
+    (remainder tamanho_palavra 2))
+  (if (= paridade_tamanho_palavra 1)
+      (if (equal? "-"
+          (substring palavra meio_palavra
+              (+ 1 meio_palavra))
+          )
+          (equal? (substring palavra 0 meio_palavra)
+              (substring palavra (+ 1 meio_palavra)
+                  tamanho_palavra))
+          #f
+          )
+      (equal? (substring palavra 0 meio_palavra)
+              (substring
+               palavra meio_palavra tamanho_palavra)
+              )
+      )
+ )
+
+ 8)
+
+(define (azulejos comprimento altura)
+
+;; NúmeroReal -> InteiroPositivo
+;;
+;; Calcula a quantidade de azulejos inteiros
+;; necessária para cobrir uma parede de azulejos
+;;
+;; Os azulejos são quadrados com 20cm de lado
+;;
+;; Recebe:
+;; comprimento em metros
+;; altura em metros
+;;
+;; Não há perda ou reaproveitamento de azulejos
+
+(examples
+   (check-= (azulejos 1.5 1.5) 64 0.001)
+   (check-= (azulejos 2.0 1.0) 50 0.001)
+   (check-= (azulejos 1.75 3.0) 135 0.001)
+)
+
+   (define azul_horiz 
+      (+(quotient(* comprimento 100)20)
+         (if (= (remainder (* comprimento 100) 20) 0) 0 1)))
+   (define azul_vert
+      (+(quotient(* altura 100)20)
+         (if (= (remainder (* altura 100) 20) 0) 0 1)))
+   (* azul_horiz azul_vert)
+)
+
+9) A função para números de quatro dígitos pode ser escrita
+como a seguir:
+
+(define (palindromo_base_10 num)
+   (define (getDigito num digito)
+      (define potencia (expt 10 digito))
+      (remainder (quotient num potencia) 10)
+   )
+   (and (= (getDigito num 0) (getDigito num 3))
+   (= (getDigito num 1)(getDigito num 2)))
+ )
+
+Sim, é possível alterar a função para qualquer quantidade
+de dígitos entrada. A função alterada encontra-se na
+sequência:
+
+(define (palindromo_base_10 num qtdDigitos)
+   (define (getDigito num digito)
+      (define potencia (expt 10 digito))
+      (remainder (quotient num potencia) 10)
+   )
+   (define (verifica_num_palindromo num carry i n)
+      (if carry
+         (if (< i n)
+             (and (= (getDigito num i) (getDigito num n))
+             (verifica_num_palindromo num carry (+ i 1) (- n 1)))
+             #t
+         )
+         #f
+      )
+   )
+   (verifica_num_palindromo num #t 0 (- qtdDigitos 1))
+ )
+
+10)
+      ;; 1)
+
+      ;; InteiroPositivo -> Boolean
+      ;;
+      ;; Produz #t se uma pessoa com a idade n é supercentenária,
+      ;; isto é, tem 110 anos ou mais, #f caso contrário.
+
+      (supercentenario 101) ;; #f
+      (supercentenario 110) ;; #t
+      (supercentenario 112) ;; #t
+
+      (define (supercentenario n)
+         (>= n 110)
+      )
+
+      ;; 2)
+
+      ;; String -> String
+      ;;
+      ;; Transforma a data de entrada do formato "dia/mes/ano"
+      ;; para o formato "ano/mes/dia".
+      ;;
+      ;; Requer que o dia e o mes tenha dois dígitos e que
+      ;; o ano tenha quatro digitos.
+
+      (data-dma->data-amd "19/07/2023") ;; "2023/07/19"
+      (data-dma->data-amd "01/01/1980") ;; "1980/01/01"
+      (data-dma->data-amd "02/02/2002") ;; "2002/02/02"
+
+      (define (data-dma->data-amd data)
+         (string-append
+            (sub-string data 6 10)
+            "/"
+            (sub-string data 3 5)
+            "/"
+            (sub-string data 0 2)
+         )
+      )
+
+      ;; 3)
+
+      ;; String -> String
+      ;;
+      ;; Avalia se um nome é curto, médio ou longo
+      ;;
+      ;; Caso ele tenha 4 ou menos caracteres,
+      ;; então retorna "curto"
+      ;;
+      ;; Caso ele tenha mais do que 4 caracteres e até
+      ;; 10 caracteres (10 incluso), então retorna "médio"
+      ;;
+      ;; Caso ele tenha mais do que 10 caracteres, então
+      ;; retorna "longo"
+
+      (define (tamanho-nome nome)
+      (cond
+      [(<= (string-length nome) 4) "curto"]
+      [(<= (string-length nome) 10) "médio"]
+      [else "longo"]))
+
+      (tamanho-nome "Nara") ;; "curto"
+      (tamanho-nome "Alberto") ;; "médio"
+      (tamanho-nome "José Guilherme") ;; "longo"
+
+
+
+      ;; 4)
+
+      ;; String -> InteiroPositivo
+      ;;
+      ;; Converte uma sequência de "a"s e "b"s em um número
+      ;; considerando que "a"s representam "0"s e "b"s 
+      ;; representam "1"s. Além disso, considera-se que a base é 
+      ;; a base (base binária).
+      ;;
+      ;; Desta forma, a função substitui os "a"s por "0"s e os
+      ;; "b"s por "1"s. Na seqência, converte a string resultante
+      ;; composta por "1"s e "0"s para um número assumindo-se
+      ;; que a sequência de "1"s e "0"s representa um número
+      ;; em base binária
+
+      (ab->number "bab") ;; 5
+      (ab->number "baaa") ;; 8
+      (ab-number "bb") ;; 3
+
+
+      ;; 5)a) Função que converte medida em centímetros para polegadas:
+
+      ;; NúmeroReal -> NúmeroReal
+      ;;
+      ;; Tem como entrada um valor de medida em centímetros
+      ;; e tem como resultado o valor correspondente da medida
+      ;; em polegadas
+      (define valor_in_em_cm 2.54)
+
+      (cm->in 1.0) ;; 2.54
+      (cm->in 4.0) ;; 10.16
+      (cm->in 3.3) ;; 8.382
+
+      (define (cm->in medida)
+      (* medida valor_in_em_cm)
+      )
+
+      ;; 5)b) Função que converte medida em polegadas para centímetros:
+
+      ;; NúmeroReal -> NúmeroReal
+      ;;
+      ;; Tem como entrada um valor de medida em polegadas
+      ;; e tem como resultado o valor correspondente da medida
+      ;; em centímetros
+
+      (define valor_cm_em_in (/ 1 2.54))
+
+      (in->cm 2.54) ;; 1.0
+      (in->cm 10.16) ;; 3.0
+      (in->cm 8.382) ;; 3.3
+
+      (define (in->cm medida)
+      (* medida valor_cm_em_in)
+      )
+
+      ;; 6)
+
+      ;; NúmeroReal -> NúmeroReal
+      ;;
+      ;; Calcula o imposto pago por um cidadão
+      ;; de acordo com sua renda em dinheiros
+      ;; e a definição:
+      ;;
+      ;; renda de 0 até 1000 dinheiros:
+      ;; 5% da renda
+      ;;
+      ;; renda de 1001 até 5000 dinheiros:
+      ;; 5% de 1000 dinheiros
+      ;; + 10% da renda que passar de 1000 dinheiros
+      ;;
+      ;; renda acima de 5000 dinheiros:
+      ;; 5% de 1000 dinheiros
+      ;; + 10% de 4000 dinheiros
+      ;; + 20% da renda que passar
+      ;; de 5000 dinheiros
+
+      (imposto 450.0) ;; 22.5
+      (imposto 3000.0) ;; 250.0
+      (imposto 8000.0) ;; 1050.0
+
+      (define (imposto renda)
+      (cond
+         [(<= renda 1000) (* 0.05 renda)]
+         [(<= renda 5000) (+ 50 (* 0.1 (- renda 1000)))]
+         [else (+ 450 (* 0.2 (- renda 5000)))]
+      )
+      )
+
+      ;; 7)
+
+      (define (duplicada? palavra)
+      (define tamanho_palavra (string-length palavra))
+      (define meio_palavra (quotient tamanho_palavra 2))
+      (define paridade_tamanho_palavra
+         (remainder tamanho_palavra 2))
+      (if (= paridade_tamanho_palavra 1)
+            (if (equal? "-"
+               (substring palavra meio_palavra
+                  (+ 1 meio_palavra))
+               )
+               (equal? (substring palavra 0 meio_palavra)
+                  (substring palavra (+ 1 meio_palavra)
+                        tamanho_palavra))
+               #f
+               )
+            (equal? (substring palavra 0 meio_palavra)
+                  (substring
+                     palavra meio_palavra tamanho_palavra)
+                  )
+            )
+      )
+
+      ;; 8)
+
+      ;; NúmeroReal -> InteiroPositivo
+      ;;
+      ;; Calcula a quantidade de azulejos inteiros
+      ;; necessária para cobrir uma parede de azulejos
+      ;;
+      ;; Os azulejos são quadrados com 20cm de lado
+      ;;
+      ;; Recebe:
+      ;; comprimento em metros
+      ;; altura em metros
+      ;;
+      ;; Não há perda ou reaproveitamento de azulejos
+
+      (azulejos 1.5 1.5) ;; 64
+      (azulejos 2.0 1.0) ;; 50
+      (azulejos 1.75 3.0) ;; 135
+
+      (define (azulejos comprimento altura)
+         (define azul_horiz 
+            (+(quotient(* comprimento 100)20)
+               (if (= (remainder (* comprimento 100) 20) 0) 0 1)))
+         (define azul_vert
+            (+(quotient(* altura 100)20)
+               (if (= (remainder (* altura 100) 20) 0) 0 1)))
+         (* azul_horiz azul_vert)
+      )
+
+      ;; 9) A função para números de quatro dígitos pode ser escrita
+      ;; como a seguir:
+
+      (define (palindromo_base_10 num)
+         (define (getDigito num digito)
+            (define potencia (expt 10 digito))
+            (remainder (quotient num potencia) 10)
+         )
+         (and (= (getDigito num 0) (getDigito num 3))
+         (= (getDigito num 1)(getDigito num 2)))
+      )
+
+      ;; Sim, é possível alterar a função para qualquer quantidade
+      ;; de dígitos entrada. A função alterada encontra-se na
+      ;; sequência:
+
+      (define (palindromo_base_10 num qtdDigitos)
+         (define (getDigito num digito)
+            (define potencia (expt 10 digito))
+            (remainder (quotient num potencia) 10)
+         )
+         (define (verifica_num_palindromo num carry i n)
+            (if carry
+               (if (< i n)
+                  (and (= (getDigito num i) (getDigito num n))
+                  (verifica_num_palindromo num carry (+ i 1) (- n 1)))
+                  #t
+               )
+               #f
+            )
+         )
+         (verifica_num_palindromo num #t 0 (- qtdDigitos 1))
+      )

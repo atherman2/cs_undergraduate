@@ -1,0 +1,163 @@
+1) Um literal é um valor. Por exemplo 5 e 21.5
+
+2) Uma função primitiva é uma sequência de instruções de máquina. Ou seja, é um processo, que
+gera, ao final, um valor
+
+3) Uma expressão é um literal, nome, forma especial ou função primitiva. Ou ainda, é uma
+combinação (uma lista que contém ao menos uma expressão). Ou seja, uma expressão pode conter
+mais expressões, de forma recursiva
+
+4) Avaliar uma expressão significa dela extrair um valor resultado. Caso seja uma
+combinação, avalia-se as expressões pelas quais é composta. Caso seja um literal, o valor é o
+próprio literal. Caso seja uma função primitiva, o valor é o resultado da execução das
+instruções de máquina
+
+5) Uma combinação é uma lista não vazia de expressões
+
+6) A expressão mais à esquerda de uma combinação é o operador e as demais são os operandos
+
+7) A regra de avaliação para uma combinação é aplicar o processo de avaliação para as expressões que a compõem
+
+8) Definições tem o propósito de nomear objetos computacionais, sejam dados ou funções.
+Assim é possível referenciar o mesmo objeto posteriormente e aplicar o mesmo tratamento
+a diferentes possíveis valores
+
+9) Uma função é um conjunto de expressões que mapeia valores de entrada para valores de saída
+
+10) Formas especiais são expressões que possuem regra de avaliação específicas
+
+11) Isto é fato pois uma expressão and ou or é avaliada de forma distinta. Em alguns casos,
+por exemplo, é possível retornar um valor sem verificar todos os operandos. Já o not é
+constituído pela aplicação direta de uma operação
+
+12) Em Racket isso dificilmente ou nunca ocorreria um resultado diferente por ordem de
+avaliação das expressões diferente, pois isto ocorre devido a efeitos colaterais, que são
+reduzidos no Racket. Porém, em uma linguagem diferente, com mais efeitos colaterais, é
+possível que isto ocorra.
+
+13) Devemos utilizar o operador = ao lidarmos com valores numéricos
+
+14) eq? verifica se o valor literal de dois objetos é o mesmo, já equal? verifica se
+ambos os objetos são a mesma referência
+
+15) Uma definição com autorreferência é uma definição que, para realizá-la, tem-se de
+acessar a ela própria. Caso isto ocorra indeterminadamente, o programa trava, ou seja,
+deve ser feita de forma que ocorra uma quantidade finita de vezes
+
+16) Um processo recursivo é qualquer processo que dependa da sua própria aplicação
+a outro valor, até que se chegue a um caso base
+
+17)
+(/(* (+ 3 1)
+    8)
+ (- 4 1))
+
+18) O resultado da avaliação desta expressão é 90, como pode-se verificar pelos passos:
+Reduzindo os valores mais internos:
+1 + 2 = 3
+10 / 2 = 5
+Então aplica-se:
+3 * 3 * 5 * 2 = 90
+
+19) Não é possível realizar com êxito (3 + 8) em Racket, pois espera-se que o elemento mais
+a esquerda seja uma operação ou nome de função, e não um literal. Já para 3 + 8, retorna-se 3, na sequência o procedimento de soma e na sequência o 8. Eles são tratados separadamente
+pois não estão dentro de um mesmo parêntesis
+
+20) A função que calcula área de um retângulo
+como descrito pode ser escrita da seguinte
+forma no DrRacket:
+
+#lang racket
+
+(define (area-retangulo largura altura)
+(* largura altura))
+
+
+21) A função em questão pode ser escrita:
+
+#lang racket
+
+(define (produto-anterior-posterior n)
+  (* (- n 1) n (+ n 1)))
+
+
+22) A função em questão pode ser escrita:
+
+#lang racket
+
+(define (so-primeira-maiuscula string_s)
+  (string-append
+   (string-upcase
+    (substring string_s 0 1))
+   (string-downcase
+    (substring string_s
+    1 (string-length string_s)))))
+
+
+23) A função exclamacao pode ser implementada em
+Racket da seguinte forma:
+
+#lang racket
+
+(define (exclamacao frase n)
+  (if (> n 0)
+      (exclamacao (string-append frase "!") (- n 1))
+      frase))
+
+
+24) Segue a função "par?", para a linguagem Racket:
+
+#lang racket
+
+(define (par? n)
+  (= (remainder n 2) 0))
+
+
+25) Função tres-digitos?:
+
+#lang racket
+
+(define (tres-digitos? n)
+  (or
+   (and (>= n 100)
+       (<= n 999))
+   (and (>= n -999)
+        (<= n -100))
+   ))
+
+
+26) Função maximo:
+
+#lang racket
+
+(define (maximo num1 num2)
+  (if(>= num1 num2)
+  num1
+  num2))
+
+
+27) Função ordem:
+
+#lang racket
+
+(define (ordem a b c)
+(if (<= a b c)
+"crescente" (if(>= a b c)
+"decrescente" "sem odem")))
+
+
+28) O procedimento apresentado indica que o operador a ser
+utilizado entre a e b depende da condição avaliada
+pelo if. Isto ocorre no contexto das expressões compostas.
+
+
+29) Ben Bididdle irá observar que, em um interpretador em
+ordem aplicativa, ele nunca ira terminar de avaliar, pois
+entrará em um loop infinito. Isto ocorre pois, ao tentar
+calcular o valor de (p), ele precisa calcular o valor de
+(p), de forma recursiva sem fim. Já no caso do
+interpretador em ordem normal, como ele apenas avalia o
+valor de expressões quando necessário e não é necessário
+calcular o valor de (p) para determinar o resultado de
+(test) neste caso, então ele nem começa a calcular (p) e,
+portanto, não entra em loop.
